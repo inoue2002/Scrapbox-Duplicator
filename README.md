@@ -42,3 +42,15 @@ Scrapboxの非公開・公開プロジェクトを分けて運用する際に面
 ## 謝辞
 
 - Scrapboxを開発しているNota, Inc.の皆さんに感謝します
+
+以下URLに従ってスケジュールの設定を行う
+https://cloud.google.com/run/docs/triggering/using-scheduler?hl=ja
+
+gcloud config set project scrapbox-duplicator
+
+gcloud iam service-accounts create SERVICE_ACCOUNT_NAME \
+   --display-name "DISPLAYED_SERVICE_ACCOUNT_NAME"
+
+gcloud run services add-iam-policy-binding SERVICE \
+   --member=serviceAccount:SERVICE_ACCOUNT_NAME@PROJECT_ID.iam.gserviceaccount.com \
+   --role=roles/run.invoker
