@@ -17,5 +17,8 @@
       "description": "転送先のプロジェクト名 (注意: このプロジェクトにてページが追加/上書きされます!)",
       "value": "test2"
     }
+  },
+  "options": {
+    "allow-unauthenticated": false
   }
 }
