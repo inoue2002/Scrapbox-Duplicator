@@ -1,16 +1,26 @@
-import { assertString, exportPages, importPages } from "./deps.ts";
+import { exportPages, importPages, load } from './deps.ts';
+await load({ export: true });
 
-const sid = Deno.env.get("SID");
-const exportingProjectName = Deno.env.get("SOURCE_PROJECT_NAME"); //インポート元(本来はprivateプロジェクト)
-const importingProjectName = Deno.env.get("DESTINATION_PROJECT_NAME"); //インポート先(publicプロジェクト)
-const shouldDuplicateByDefault =
-  Deno.env.get("SHOULD_DUPLICATE_BY_DEFAULT") === "True";
+//シークレットID
+const sid = Deno.env.get('SID');
+//インポート元(本来はprivateプロジェクト)
+const exportingProjectName = Deno.env.get('SOURCE_PROJECT_NAME');
+//インポート先(publicプロジェクト)
+const importingProjectName = Deno.env.get('DESTINATION_PROJECT_NAME');
+const shouldDuplicateByDefault = Deno.env.get('SHOULD_DUPLICATE_BY_DEFAULT') === 'True';
 
-assertString(sid);
-assertString(exportingProjectName);
-assertString(importingProjectName);
+if (typeof sid !== 'string') {
+  throw new Error('The sid must be a string.');
+}
+if (typeof exportingProjectName !== 'string') {
+  throw new Error('The exportingProjectName must be a string.');
+}
+if (typeof importingProjectName !== 'string') {
+  throw new Error('The importingProjectName must be a string.');
+}
 
 console.log(`Exporting a json file from "/${exportingProjectName}"...`);
+
 const result = await exportPages(exportingProjectName, {
   sid,
   metadata: true,
@@ -28,9 +38,9 @@ for (const page of pages) {
 }
 
 const importingPages = pages.filter(({ lines }) => {
-  if (lines.some((line) => line.text.includes("[private.icon]"))) {
+  if (lines.some((line) => line.text.includes('[private.icon]'))) {
     return false;
-  } else if (lines.some((line) => line.text.includes("[public.icon]"))) {
+  } else if (lines.some((line) => line.text.includes('[public.icon]'))) {
     return true;
   } else {
     return shouldDuplicateByDefault;
@@ -38,16 +48,18 @@ const importingPages = pages.filter(({ lines }) => {
 });
 
 if (importingPages.length === 0) {
-  console.log("No page to be imported found.");
+  console.log('No page to be imported found.');
 } else {
-  console.log(
-    `Importing ${importingPages.length} pages to "/${importingProjectName}"...`,
+  console.log(`Importing ${importingPages.length} pages to "/${importingProjectName}"...`);
+  const result = await importPages(
+    importingProjectName,
+    {
+      pages: importingPages,
+    },
+    {
+      sid,
+    }
   );
-  const result = await importPages(importingProjectName, {
-    pages: importingPages,
-  }, {
-    sid,
-  });
   if (!result.ok) {
     const error = new Error();
     error.name = `${result.value.name} when importing pages`;

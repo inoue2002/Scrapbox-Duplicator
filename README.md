@@ -15,10 +15,8 @@ Scrapboxの非公開・公開プロジェクトを分けて運用する際に面
 以下の2ステップで実行可能です。
 
 1. 下のボタン（'Deploy to Heroku'）を押し、必要な情報を入力。
-2. Heroku
-   Schedulerで`deno run --allow-net=scrapbox.io --allow-read=./ --allow-env index.ts`を定期実行するように設定
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://dashboard.heroku.com/new?template=https%3A%2F%2Fgithub.com%2Fblu3mo%2Fscrapbox-duplicator%2Ftree%2Fmaster)
+[![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://deploy.cloud.run)
 
 ### 必要なもの
 
@@ -44,3 +42,15 @@ Scrapboxの非公開・公開プロジェクトを分けて運用する際に面
 ## 謝辞
 
 - Scrapboxを開発しているNota, Inc.の皆さんに感謝します
+
+以下URLに従ってスケジュールの設定を行う
+https://cloud.google.com/run/docs/triggering/using-scheduler?hl=ja
+
+gcloud config set project scrapbox-duplicator
+
+gcloud iam service-accounts create SERVICE_ACCOUNT_NAME \
+   --display-name "DISPLAYED_SERVICE_ACCOUNT_NAME"
+
+gcloud run services add-iam-policy-binding SERVICE \
+   --member=serviceAccount:SERVICE_ACCOUNT_NAME@PROJECT_ID.iam.gserviceaccount.com \
+   --role=roles/run.invoker
